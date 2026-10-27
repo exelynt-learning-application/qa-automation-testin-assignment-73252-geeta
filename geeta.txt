@@ -1,0 +1,236 @@
+# API Testing with Postman – Assignment Theory
+
+## 1. Introduction
+
+API testing is a software testing technique used to verify that an Application Programming Interface (API) works correctly. It checks whether the API accepts requests, processes data, and returns the expected responses.
+
+Postman is a popular API testing tool used to send HTTP requests, inspect responses, write automated test scripts, and organize API requests into collections.
+
+For this assignment, I used a public demo API to test the four main HTTP methods: GET, POST, PUT, and DELETE.
+
+## 2. Objectives
+
+- To understand API testing using Postman.
+- To test GET, POST, PUT, and DELETE HTTP methods.
+- To validate HTTP status codes and response bodies.
+- To check API response time.
+- To write automated test scripts using JavaScript assertions.
+- To organize API requests into a Postman collection.
+- To export the collection and capture screenshots of test results.
+
+## 3. Tools and Technologies Used
+
+| Tool            | Purpose                                             |
+| --------------- | --------------------------------------------------- |
+| Postman         | Sending API requests and testing responses          |
+| JSONPlaceholder | Public demo REST API                                |
+| HTTP            | Communication between client and server             |
+| JavaScript      | Writing automated test scripts                      |
+| JSON            | Data exchange format for API requests and responses |
+
+Base URL: `https://jsonplaceholder.typicode.com`
+
+## 4. Theory of HTTP Methods
+
+### 4.1 GET Request
+
+The GET method is used to retrieve data from a server. It does not normally modify the server's resources.
+
+Example endpoint:
+
+`GET https://jsonplaceholder.typicode.com/posts/1`
+
+Expected result: The API returns the details of a post, including its ID, title, body, and user ID.
+
+Expected status code: `200 OK`
+
+### 4.2 POST Request
+
+The POST method is used to submit data to a server, commonly to create a new resource.
+
+Example endpoint:
+
+`POST https://jsonplaceholder.typicode.com/posts`
+
+Request body:
+
+```
+{
+  "title": "API Testing",
+  "body": "Testing POST request using Postman",
+  "userId": 1
+}
+```
+
+Expected result: The API returns a response containing the submitted data and a generated ID.
+
+Expected status code: `201 Created`
+
+Note: JSONPlaceholder simulates resource creation; it does not permanently save the new post.
+
+### 4.3 PUT Request
+
+The PUT method is used to replace or update an existing resource.
+
+Example endpoint:
+
+`PUT https://jsonplaceholder.typicode.com/posts/1`
+
+Request body:
+
+```
+{
+  "id": 1,
+  "title": "Updated API Testing",
+  "body": "Testing PUT request using Postman",
+  "userId": 1
+}
+```
+
+Expected result: The API returns the updated resource.
+
+Expected status code: `200 OK`
+
+### 4.4 DELETE Request
+
+The DELETE method is used to request the deletion of an existing resource.
+
+Example endpoint:
+
+`DELETE https://jsonplaceholder.typicode.com/posts/1`
+
+Expected result: The API returns a successful deletion response, typically an empty JSON object.
+
+Expected status code: `200 OK`
+
+Note: JSONPlaceholder simulates deletion without permanently modifying its stored dataset.
+
+## 5. API Response Validation
+
+An API response generally contains a status code, response headers, response body, and response time.
+
+- Status code: Indicates whether the request succeeded.
+- Response body: Contains the data returned by the API.
+- Response time: Measures how long the API takes to respond.
+- Response headers: Provide additional information, such as content type.
+
+Common HTTP status codes include:
+
+| Status Code | Meaning                                           |
+| ----------- | ------------------------------------------------- |
+| 200         | OK – Request completed successfully               |
+| 201         | Created – Resource created successfully           |
+| 400         | Bad Request – Invalid request                     |
+| 401         | Unauthorized – Authentication required or invalid |
+| 404         | Not Found – Resource not found                    |
+| 500         | Internal Server Error – Server-side error         |
+
+## 6. Automated Test Scripts in Postman
+
+Postman supports JavaScript-based test scripts that automatically validate API responses. These scripts are written in the Scripts → Post-response section of a request.
+
+The following are five example assertions.
+
+Test 1: Validate status code
+
+```
+pm.test("Status code is 200", function () {
+    pm.response.to.have.status(200);
+});
+```
+
+Test 2: Validate response time
+
+```
+pm.test("Response time is below 2000 ms", function () {
+    pm.expect(pm.response.responseTime).to.be.below(2000);
+});
+```
+
+Test 3: Validate response body
+
+```
+pm.test("Response body is not empty", function () {
+    pm.expect(pm.response.text()).to.not.be.empty;
+});
+```
+
+Test 4: Validate JSON response
+
+```
+pm.test("Response is valid JSON", function () {
+    pm.response.to.be.json;
+});
+```
+
+Test 5: Validate a specific field
+
+```
+pm.test("Post ID is 1", function () {
+    const response = pm.response.json();
+    pm.expect(response.id).to.eql(1);
+});
+```
+
+These five examples are for a successful GET request to `/posts/1`. For POST, PUT, and DELETE requests, the expected status codes and response-body assertions should be adjusted according to each endpoint.
+
+## 7. Collection Organization
+
+A Postman collection is a group of related API requests stored together. It helps organize test cases and execute them systematically.
+
+I organized the collection with the following requests:
+
+JSONPlaceholder API Testing
+
+GET
+
+Get Single Post
+
+POST
+
+Create New Post
+
+PUT
+
+Update Existing Post
+
+DELETE
+
+Delete Existing Post
+
+Each request contains its URL, HTTP method, request body when required, and relevant test scripts.
+
+## 8. Collection Export
+
+After configuring the requests and test scripts, the collection can be exported from Postman.
+
+Steps:
+
+1. Open Postman and select the API testing collection.
+2. Click the three-dot menu next to the collection name.
+3. Select Export.
+4. Choose an appropriate Collection v2.1 format.
+5. Save the exported file as `JSONPlaceholder_API_Testing.postman_collection.json`.
+
+The exported JSON file contains the collection's request definitions and associated scripts, making it possible to import and reuse the tests.
+
+## 9. Screenshots and Documentation
+
+The following screenshots should be captured as evidence of the assignment:
+
+1. Collection showing all four HTTP methods.
+2. GET request with its response body and status code.
+3. POST request showing the submitted data and response.
+4. PUT request showing the updated response.
+5. DELETE request showing the successful response.
+6. Test results displaying the passed assertions.
+
+Screenshots should be captured from actual Postman executions to demonstrate that the tests ran successfully.
+
+## 10. Conclusion
+
+In this assignment, API testing using Postman helps demonstrate how REST APIs can be tested using different HTTP methods. GET retrieves data, POST submits new data, PUT updates a resource, and DELETE requests resource deletion.
+
+Automated assertions help validate status codes, response bodies, and response times. Organizing the requests into a collection makes testing easier to maintain, execute, and share. Exporting the collection and documenting the results provides evidence of the testing process.
+
+Final outcome: The assignment demonstrates the basic principles of REST API testing, automated response validation, collection management, and test documentation.
