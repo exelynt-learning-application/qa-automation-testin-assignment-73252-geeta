@@ -1,0 +1,195 @@
+from docx import Document
+from docx.shared import Inches, Pt, RGBColor
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.section import WD_SECTION
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+
+doc = Document()
+sec = doc.sections[0]
+sec.top_margin = Inches(0.7)
+sec.bottom_margin = Inches(0.7)
+sec.left_margin = Inches(0.8)
+sec.right_margin = Inches(0.8)
+
+styles = doc.styles
+styles['Normal'].font.name = 'Arial'
+styles['Normal'].font.size = Pt(10)
+styles['Normal'].paragraph_format.space_after = Pt(5)
+for sty in ['Title', 'Heading 1', 'Heading 2']:
+    styles[sty].font.name = 'Arial'
+styles['Title'].font.size = Pt(23)
+styles['Title'].font.bold = True
+styles['Title'].font.color.rgb = RGBColor(31, 78, 121)
+styles['Heading 1'].font.size = Pt(16)
+styles['Heading 1'].font.color.rgb = RGBColor(31, 78, 121)
+styles['Heading 2'].font.size = Pt(12)
+styles['Heading 2'].font.color.rgb = RGBColor(46, 116, 181)
+
+p = doc.add_paragraph()
+p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+r = p.add_run("SDLC & DEVELOPMENT MODELS")
+r.bold = True
+r.font.size = Pt(12)
+r.font.color.rgb = RGBColor(90, 90, 90)
+
+p = doc.add_paragraph(style='Title')
+p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+p.add_run("Testing Levels and the Test Pyramid")
+
+p = doc.add_paragraph()
+p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+r = p.add_run("Assignment")
+r.italic = True
+r.font.size = Pt(11)
+
+doc.add_paragraph("")
+
+doc.add_heading("1. Introduction", level=1)
+doc.add_paragraph(
+    "Software testing is the process of evaluating a software application to identify defects and check whether it meets specified requirements. "
+    "Testing helps improve reliability, security, usability, and overall product quality. Testing can be organized into four commonly used levels: "
+    "unit testing, integration testing, system testing, and acceptance testing."
+)
+
+doc.add_heading("2. The Four Testing Levels", level=1)
+
+doc.add_heading("2.1 Unit Testing", level=2)
+doc.add_paragraph(
+    "Definition: Unit testing checks a small, isolated part of an application, such as a function, method, or class. "
+    "It is usually performed by developers and often uses automated tests."
+)
+doc.add_paragraph("Example: In an online shopping application, a developer tests a calculateTotal() method to confirm that item prices, quantities, and discounts produce the correct total.")
+doc.add_paragraph("Purpose: Find defects early, verify individual logic, and make code changes safer. Dependencies may be replaced with mocks or stubs so the unit can be tested in isolation.")
+
+doc.add_heading("2.2 Integration Testing", level=2)
+doc.add_paragraph(
+    "Definition: Integration testing checks whether two or more components, services, or systems work correctly together. "
+    "It focuses on interfaces, data exchange, and interactions."
+)
+doc.add_paragraph("Example: Test whether the order service correctly saves an order in the database and sends the order details to the payment service.")
+doc.add_paragraph("Purpose: Detect interface mismatches, incorrect data mapping, configuration problems, and failures in communication between components.")
+
+doc.add_heading("2.3 System Testing", level=2)
+doc.add_paragraph(
+    "Definition: System testing evaluates the complete, integrated application against its functional and non-functional requirements. "
+    "It is commonly performed in a controlled test environment."
+)
+doc.add_paragraph("Example: Test an end-to-end shopping flow: sign in, search for a product, add it to the cart, place an order, pay, and view the confirmation.")
+doc.add_paragraph("Purpose: Check that the application works as a whole. Testing may include functionality, performance, security, compatibility, and usability.")
+
+doc.add_heading("2.4 Acceptance Testing", level=2)
+doc.add_paragraph(
+    "Definition: Acceptance testing determines whether the system meets business needs and is ready for delivery or release. "
+    "It may be performed by customers, business representatives, product owners, or users."
+)
+doc.add_paragraph("Example: A business representative verifies that an order can be placed, the correct tax and delivery fee are applied, and the order confirmation meets the agreed acceptance criteria.")
+doc.add_paragraph("Purpose: Confirm business readiness and provide evidence for an accept/reject release decision. User acceptance testing (UAT) is a common form; alpha and beta testing may also support acceptance.")
+
+doc.add_heading("Summary of Testing Levels", level=2)
+table = doc.add_table(rows=1, cols=4)
+table.style = 'Light Shading Accent 1'
+headers = ["Level", "Main focus", "Typical performer", "Example"]
+for i, h in enumerate(headers):
+    table.rows[0].cells[i].text = h
+rows = [
+    ("Unit", "Individual code unit", "Developer", "Test calculateTotal()"),
+    ("Integration", "Component interactions", "Developers / testers", "Order service + database"),
+    ("System", "Complete application", "Test team", "End-to-end checkout"),
+    ("Acceptance", "Business requirements", "Customer / business user", "Verify checkout acceptance criteria"),
+]
+for row in rows:
+    cells = table.add_row().cells
+    for i, val in enumerate(row):
+        cells[i].text = val
+
+doc.add_heading("3. Black Box Testing vs White Box Testing", level=1)
+doc.add_paragraph(
+    "Black box and white box testing are approaches that describe how a test is designed. They are not separate testing levels; either approach can be used at different levels where appropriate."
+)
+table = doc.add_table(rows=1, cols=3)
+table.style = 'Light Shading Accent 1'
+for i, h in enumerate(["Aspect", "Black Box Testing", "White Box Testing"]):
+    table.rows[0].cells[i].text = h
+comparison = [
+    ("Knowledge required", "Does not require knowledge of internal code.", "Requires knowledge of internal code and structure."),
+    ("Focus", "Inputs, outputs, and externally observable behavior.", "Code paths, branches, conditions, and logic."),
+    ("Test design", "Requirements, use cases, equivalence partitioning, boundary values.", "Statement coverage, branch coverage, condition coverage, path-oriented tests."),
+    ("Typical users", "Testers, QA engineers, business users; developers can also use it.", "Mostly developers and technical testers."),
+    ("Example", "Enter an invalid password and verify the expected error message.", "Test both true and false outcomes of the password-validation condition."),
+    ("Strength", "Checks behavior from a user's or consumer's perspective.", "Can reveal untested logic and hidden code-level defects."),
+    ("Limitation", "May not reveal unexecuted internal code paths.", "May miss missing requirements or behavior that was never implemented."),
+]
+for row in comparison:
+    cells = table.add_row().cells
+    for i, val in enumerate(row):
+        cells[i].text = val
+
+doc.add_heading("4. Test Automation Pyramid", level=1)
+doc.add_paragraph(
+    "The test automation pyramid is a guideline for balancing automated tests. It recommends having many fast, focused unit tests at the base, "
+    "a smaller number of integration or service tests in the middle, and fewer end-to-end user-interface tests at the top. "
+    "The exact proportions depend on the product and architecture."
+)
+
+# Create a centered text pyramid using progressively narrower shaded cells
+p = doc.add_paragraph()
+p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+p.paragraph_format.space_before = Pt(4)
+p.paragraph_format.space_after = Pt(8)
+r = p.add_run("                 /\\\n                /  \\\n               / UI \\\n              / End-to- \\\n             / end tests \\\n            /------------\\\n           / Integration  \\\n          /  / service tests\\\n         /------------------\\\n        /    Unit tests      \\\n       /______________________\\")
+r.font.name = "Consolas"
+r.font.size = Pt(11)
+r.font.color.rgb = RGBColor(31, 78, 121)
+
+doc.add_heading("4.1 Layers of the Pyramid", level=2)
+doc.add_paragraph(
+    "1. Unit tests — Base (many): Test individual functions and classes. They run quickly, are relatively inexpensive to maintain, and help pinpoint defects. "
+    "Example: verify that a discount calculation returns the correct value."
+)
+doc.add_paragraph(
+    "2. Integration/service tests — Middle (a moderate number): Test interactions between components, APIs, databases, or external-service boundaries. "
+    "Example: call the order API and verify that the order is stored correctly in a test database."
+)
+doc.add_paragraph(
+    "3. End-to-end/UI tests — Top (fewer): Test important user journeys through the application as a user would experience them. "
+    "Example: use a browser to sign in, add an item to the cart, and complete checkout."
+)
+
+doc.add_heading("4.2 Why Use the Pyramid?", level=2)
+for item in [
+    "Speed: Unit tests generally execute fastest; browser-based end-to-end tests are usually slower.",
+    "Cost and maintenance: A large number of UI tests can be expensive and fragile to maintain.",
+    "Fast feedback: A broad base of unit tests helps developers detect problems early.",
+    "Balanced confidence: Integration and end-to-end tests still matter because unit tests alone cannot prove that the full system works.",
+]:
+    doc.add_paragraph(item, style='List Bullet')
+
+doc.add_heading("5. Conclusion", level=1)
+doc.add_paragraph(
+    "The four testing levels provide progressively broader checks, from individual code units to business acceptance. "
+    "Black box testing verifies externally observable behavior, while white box testing examines internal code logic. "
+    "The test automation pyramid encourages a balanced suite with many unit tests, a useful layer of integration/service tests, and a smaller set of high-value end-to-end tests. "
+    "Together, these practices support early defect detection, reliable integrations, and confidence that the product meets user and business needs."
+)
+
+doc.add_heading("References", level=1)
+for item in [
+    "ISTQB, Certified Tester Foundation Level (CTFL) syllabus — terminology and testing fundamentals.",
+    "Martin Fowler, “The Practical Test Pyramid” — practical guidance on test-suite structure.",
+    "Google Testing Blog, “Just Say No to More End-to-End Tests” — discussion of test balance and feedback speed.",
+]:
+    doc.add_paragraph(item, style='List Bullet')
+
+# Footer page number field
+for section in doc.sections:
+    footer = section.footer.paragraphs[0]
+    footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    footer.add_run("Testing Levels and the Test Pyramid  |  Page ")
+    fld = OxmlElement('w:fldSimple')
+    fld.set(qn('w:instr'), 'PAGE')
+    footer._p.append(fld)
+
+path = "/mnt/data/Testing_Levels_and_Test_Pyramid_Assignment.docx"
+doc.save(path)
+print(path)
